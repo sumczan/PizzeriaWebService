@@ -1,4 +1,5 @@
-﻿using PizzeriaWebService.Core.Interfaces.Repositories;
+﻿using PizzeriaWebService.Core.EfModels;
+using PizzeriaWebService.Core.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,10 @@ namespace PizzeriaWebService.Repository;
 
 public class OrderAddressRepository : IOrderAddressRepository
 {
+    private readonly PizzeriaDbContext _context;
 
+    public OrderAddressRepository(PizzeriaDbContext context)
+    {
+        _context = context;
+    }
 }

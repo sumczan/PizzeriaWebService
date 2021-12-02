@@ -1,8 +1,14 @@
+using Microsoft.EntityFrameworkCore;
+using PizzeriaWebService.Core.EfModels;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<PizzeriaDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 var app = builder.Build();
 

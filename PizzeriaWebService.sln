@@ -5,13 +5,18 @@ VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PizzeriaWebService", "PizzeriaWebService\PizzeriaWebService.csproj", "{8E972994-5332-40B5-B53E-5D7EF044D2E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzeriaWebService.Core", "PizzeriaWebService.Core\PizzeriaWebService.Core.csproj", "{286F97F2-2F18-4EA4-980D-00210D1AAEC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PizzeriaWebService.Core", "PizzeriaWebService.Core\PizzeriaWebService.Core.csproj", "{286F97F2-2F18-4EA4-980D-00210D1AAEC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzeriaWebService.Repository", "PizzeriaWebService.Repository\PizzeriaWebService.Repository.csproj", "{D5E8BB2E-4E2E-4FB6-94FE-72B6185507D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PizzeriaWebService.Repository", "PizzeriaWebService.Repository\PizzeriaWebService.Repository.csproj", "{D5E8BB2E-4E2E-4FB6-94FE-72B6185507D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzeriaWebService.Service", "PizzeriaWebService.Service\PizzeriaWebService.Service.csproj", "{5777CEB8-DE5B-49DE-8216-5832457A1EE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PizzeriaWebService.Service", "PizzeriaWebService.Service\PizzeriaWebService.Service.csproj", "{5777CEB8-DE5B-49DE-8216-5832457A1EE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzeriaWebService.Test", "PizzeriaWebService.Test\PizzeriaWebService.Test.csproj", "{3B4893EF-4DA8-41B7-84E8-36E856D9762D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PizzeriaWebService.Test", "PizzeriaWebService.Test\PizzeriaWebService.Test.csproj", "{3B4893EF-4DA8-41B7-84E8-36E856D9762D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DBA1EE3C-FE6D-49DE-B4A9-B7B8F7D7DE72}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using PizzeriaWebService.Core.EfModels;
 using PizzeriaWebService.Core.Interfaces.Repositories;
+using PizzeriaWebService.Core.Interfaces.Services;
 using PizzeriaWebService.Repository;
+using PizzeriaWebService.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +32,24 @@ builder.Services.AddTransient<IOrderTypeRepository, OrderTypeRepository>();
 builder.Services.AddTransient<IPizzaIngredientRepository, PizzaIngredientRepository>();
 builder.Services.AddTransient<IPizzaRepository, PizzaRepository>();
 builder.Services.AddTransient<IPizzaSizeRepository, PizzaSizeRepository>();
+
+builder.Services.AddTransient<IBeverageService, BeverageService>();
+builder.Services.AddTransient<ICityService, CityService>();
+builder.Services.AddTransient<IClientBlacklistService, ClientBlacklistService>();
+builder.Services.AddTransient<IIngredientService, IngredientService>();
+builder.Services.AddTransient<IIngredientTypeService, IngredientTypeService>();
+builder.Services.AddTransient<IOrderAddressService, OrderAddressService>();
+builder.Services.AddTransient<IOrderBeverageService, OrderBeverageService>();
+builder.Services.AddTransient<IOrderPizzaIngredientChangeService, OrderPizzaIngredientChangeService>();
+builder.Services.AddTransient<IOrderPizzaIngredientExtraService, OrderPizzaIngredientExtraService>();
+builder.Services.AddTransient<IOrderPizzaService, OrderPizzaService>();
+builder.Services.AddTransient<IOrderPlacedService, OrderPlacedService>();
+builder.Services.AddTransient<IOrderStatusService, OrderStatusService>();
+builder.Services.AddTransient<IOrderTypeService, OrderTypeService>();
+builder.Services.AddTransient<IPizzaIngredientService, PizzaIngredientService>();
+builder.Services.AddTransient<IPizzaService, PizzaService>();
+builder.Services.AddTransient<IPizzaSizeService, PizzaSizeService>();
+
 
 var app = builder.Build();
 

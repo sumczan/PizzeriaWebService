@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PizzeriaWebService.Core.Exceptions;
 
-public class ProvidedItemAlreadyExistsException : Exception
+public class ProvidedItemAlreadyExistsException : PizzeriaWebServiceException
 {
     public ProvidedItemAlreadyExistsException()
     {

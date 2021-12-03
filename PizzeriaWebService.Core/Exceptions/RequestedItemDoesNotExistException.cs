@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace PizzeriaWebService.Core.Exceptions;
 
-public class RequestedItemDoesNotExistException : Exception
-{
+public class RequestedItemDoesNotExistException : PizzeriaWebServiceException 
+{ 
     public RequestedItemDoesNotExistException()
     {   
     }

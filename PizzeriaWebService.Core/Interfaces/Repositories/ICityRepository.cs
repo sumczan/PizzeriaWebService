@@ -9,10 +9,10 @@ namespace PizzeriaWebService.Core.Interfaces.Repositories;
 
 public interface ICityRepository
 {
-    Task<City> AddCity(City city);
-    Task<IEnumerable<City>> GetCities();
-    Task<City> GetCityById(int id);
-    Task<City> GetCityByName(string cityName);
-    Task RemoveCity(int id);
-    Task<City> UpdateCity(City city);
+    Task<City> AddCityAsync(City city);
+    Task<IEnumerable<City>> GetCitiesAsync();
+    Task<City> GetCityByIdAsync(int id);
+    Task<City> GetCityByNameAsync(string cityName);
+    Task RemoveCityAsync(int id);
+    Task<City> UpdateCityAsync(City city);
 }

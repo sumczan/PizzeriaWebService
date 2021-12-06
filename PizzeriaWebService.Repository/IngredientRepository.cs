@@ -27,17 +27,13 @@ public class IngredientRepository : IIngredientRepository
     public async Task<Ingredient> GetIngredientByIdAsync(int id)
     {
         var ingredient = await _context.Ingredients.FindAsync(id).ConfigureAwait(false);
-        if (ingredient is null)
-            throw new RequestedItemDoesNotExistException($"Ingredient with provided Id: {id} does not exist!");
-        return ingredient;
+        return ingredient ?? throw new RequestedItemDoesNotExistException($"Ingredient with provided Id: {id} does not exist!");
     }
 
     public async Task<Ingredient> GetIngredientByNameAsync(string ingredientName)
     {
         var ingredient = await _context.Ingredients.FirstOrDefaultAsync(x=>x.IngredientName==ingredientName).ConfigureAwait(false);
-        if (ingredient is null)
-            throw new RequestedItemDoesNotExistException($"Ingredient with provided name: {ingredientName} does not exist!");
-        return ingredient;
+        return ingredient ?? throw new RequestedItemDoesNotExistException($"Ingredient with provided name: {ingredientName} does not exist!");
     }
 
     public async Task RemoveIngredientAsync(int id)
@@ -68,12 +64,10 @@ public class IngredientRepository : IIngredientRepository
         if (!Equals(ingredient.IngredientName, ingredientToUpdate.IngredientName))
             if (await _context.Ingredients.FirstOrDefaultAsync(x => x.IngredientName == ingredient.IngredientName).ConfigureAwait(false) is not null)
                 throw new ProvidedItemAlreadyExistsException($"Ingredient with provided name: {ingredient.IngredientName} already exists!");
-        
         ingredientToUpdate.IngredientName = ingredient.IngredientName;
         ingredientToUpdate.IngredientPrice = ingredient.IngredientPrice;
         ingredientToUpdate.IngredientTypeId = ingredient.IngredientTypeId;
         await _context.SaveChangesAsync().ConfigureAwait(false);
-
         return ingredientToUpdate;
     }
 }

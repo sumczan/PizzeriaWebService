@@ -53,17 +53,13 @@ public class IngredientTypeRepository : IIngredientTypeRepository
     public async Task<IngredientType> GetIngredientTypeByIdAsync(int id)
     {
         var ingredientType = await _context.IngredientTypes.FindAsync(id).ConfigureAwait(false);
-        if (ingredientType is null)
-            throw new RequestedItemDoesNotExistException($"Ingredient type with provided Id: {id} does not exist!");
-        return ingredientType;
+        return ingredientType ?? throw new RequestedItemDoesNotExistException($"Ingredient type with provided Id: {id} does not exist!");
     }
 
     public async Task<IngredientType> GetIngredientTypeByNameAsync(string ingredientTypeName)
     {
         var ingredientType = await _context.IngredientTypes.FirstOrDefaultAsync(x=>x.IngredientTypeName==ingredientTypeName).ConfigureAwait(false);
-        if (ingredientType is null)
-            throw new RequestedItemDoesNotExistException($"Ingredient type with provided name: {ingredientTypeName} does not exist!");
-        return ingredientType;
+        return ingredientType ?? throw new RequestedItemDoesNotExistException($"Ingredient type with provided name: {ingredientTypeName} does not exist!");
     }
 
     public async Task RemoveIngredientTypeAsync(int id)

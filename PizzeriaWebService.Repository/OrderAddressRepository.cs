@@ -35,9 +35,7 @@ public class OrderAddressRepository : IOrderAddressRepository
     public async Task<OrderAddress> GetOrderAddressByOrderIdAsync(int orderPlacedId)
     {
         var orderAddress = await _context.OrderAddresses.FindAsync(orderPlacedId).ConfigureAwait(false);
-        if (orderAddress is null)
-            throw new RequestedItemDoesNotExistException($"Order address with provided order Id: {orderPlacedId} does not exist!");
-        return orderAddress;
+        return orderAddress ?? throw new RequestedItemDoesNotExistException($"Order address with provided order Id: {orderPlacedId} does not exist!");
     }
 
     public async Task RemoveOrderAddressAsync(int orderPlacedId)

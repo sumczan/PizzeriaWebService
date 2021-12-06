@@ -34,9 +34,7 @@ public class OrderPizzaIngredientExtraRepository : IOrderPizzaIngredientExtraRep
     public async Task<OrderPizzaIngredientExtra> GetOrderPizzaIngredientExtraByIdAsync(int id)
     {
         var pizzaIngredientExtra = await _context.OrderPizzaIngredientExtras.FindAsync(id).ConfigureAwait(false);
-        if (pizzaIngredientExtra is null)
-            throw new RequestedItemDoesNotExistException($"Pizza ingredient extra with provided Id: {id} does not exist!");
-        return pizzaIngredientExtra;
+        return pizzaIngredientExtra ?? throw new RequestedItemDoesNotExistException($"Pizza ingredient extra with provided Id: {id} does not exist!");
     }
 
     public async Task RemoveOrderPizzaIngredientExtraAsync(int id)

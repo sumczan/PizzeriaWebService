@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PizzeriaWebService.Core.EfModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,5 @@ namespace PizzeriaWebService.Core.Interfaces.Repositories;
 
 public interface IOrderPlacedRepository
 {
-
+    Task<IEnumerable<OrderPlaced>> GetOrderPlacedsAsync();
 }

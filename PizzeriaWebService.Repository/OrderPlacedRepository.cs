@@ -1,4 +1,5 @@
-﻿using PizzeriaWebService.Core.EfModels;
+﻿using Microsoft.EntityFrameworkCore;
+using PizzeriaWebService.Core.EfModels;
 using PizzeriaWebService.Core.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
@@ -15,5 +16,10 @@ public class OrderPlacedRepository : IOrderPlacedRepository
     public OrderPlacedRepository(PizzeriaDbContext context)
     {
         _context = context;
+    }
+
+    public async Task<IEnumerable<OrderPlaced>> GetOrderPlacedsAsync()
+    {
+        return await _context.OrderPlaceds.ToListAsync().ConfigureAwait(false);
     }
 }

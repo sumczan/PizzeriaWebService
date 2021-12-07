@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using PizzeriaWebService.Core.AutoMapperProfiles;
 using PizzeriaWebService.Core.EfModels;
 using PizzeriaWebService.Core.Interfaces.Repositories;
@@ -16,11 +17,14 @@ var builder = WebApplication.CreateBuilder(args);
 var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new BeverageProfile());
+    mc.AddProfile(new CityProfile());
 });
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<PizzeriaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
@@ -70,6 +74,10 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseExceptionHandler("/error");
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

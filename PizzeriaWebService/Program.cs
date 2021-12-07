@@ -18,6 +18,7 @@ var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new BeverageProfile());
     mc.AddProfile(new CityProfile());
+    mc.AddProfile(new ClientBlacklistProfile());
 });
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);

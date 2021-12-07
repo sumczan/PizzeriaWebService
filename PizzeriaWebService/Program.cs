@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using PizzeriaWebService.Core.EfModels;
 using PizzeriaWebService.Core.Interfaces.Repositories;
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<PizzeriaDbContext>(options =>
@@ -63,6 +65,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseCors(x => x
+                .SetIsOriginAllowed(origin => true)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
 
 
 app.MapControllerRoute(

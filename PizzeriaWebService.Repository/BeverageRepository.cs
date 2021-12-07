@@ -21,7 +21,6 @@ public class BeverageRepository : IBeverageRepository
 
     public async Task<IEnumerable<Beverage>> GetBeveragesAsync()
     {
-        var test = _context.Beverages.First();
         return await _context.Beverages.ToListAsync().ConfigureAwait(false);
     }
 

@@ -10,6 +10,6 @@ public  class BeverageDTO
 {
     public int Id { get; set; }
     public string BeverageName { get; set; } = null!;
-    public bool IsAlcogolic { get; set; }
+    public bool IsAlcoholic { get; set; }
     public decimal BeveragePrice { get; set; }
 }

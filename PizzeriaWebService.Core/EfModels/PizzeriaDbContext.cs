@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace PizzeriaWebService.Core.EfModels;
 
@@ -34,6 +37,7 @@ public partial class PizzeriaDbContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
+            //optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=PizzeriaDb;Trusted_Connection=True;");
             optionsBuilder.UseSqlServer("Name=Database");
         }
     }

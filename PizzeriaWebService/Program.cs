@@ -1,5 +1,7 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using PizzeriaWebService.Core.AutoMapperProfiles;
 using PizzeriaWebService.Core.EfModels;
 using PizzeriaWebService.Core.Interfaces.Repositories;
 using PizzeriaWebService.Core.Interfaces.Services;
@@ -10,7 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddAutoMapper(typeof(Program));
+//builder.Services.AddAutoMapper(typeof(Program));
+var mapperConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile(new BeverageProfile());
+});
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<PizzeriaDbContext>(options =>

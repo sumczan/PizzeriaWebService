@@ -14,9 +14,9 @@ public class ClientBlacklistProfile : Profile
 {
     public ClientBlacklistProfile()
     {
-        CreateMap<ClientBlacklist, ClientBlacklistDTO>()
-            .ForMember(dto => dto.City, opt => opt.MapFrom(entity => entity.City));
+        CreateMap<ClientBlacklist, ClientBlacklistDTO>();
 
-        CreateMap<ClientBlacklistDTO, ClientBlacklist>();
+        CreateMap<ClientBlacklistDTO, ClientBlacklist>()
+            .ForMember(entity => entity.CityId, opt => opt.MapFrom(dto => dto.City.Id));
     }
 }

@@ -25,31 +25,6 @@ public class IngredientTypeRepository : IIngredientTypeRepository
         return await _context.IngredientTypes.ToListAsync().ConfigureAwait(false);
     }
 
-    public async Task<IEnumerable<IngredientType>> GetIngredientTypesMeatAsync()
-    {
-        return await _context.IngredientTypes.Where(x=>x.IsMeat).ToListAsync().ConfigureAwait(false);
-    }
-
-    public async Task<IEnumerable<IngredientType>> GetIngredientTypesVegetableAsync()
-    {
-        return await _context.IngredientTypes.Where(x=>x.IsVegetable).ToListAsync().ConfigureAwait(false);
-    }
-
-    public async Task<IEnumerable<IngredientType>> GetIngredientTypesVeganAsync()
-    {
-        return await _context.IngredientTypes.Where(x=>x.IsVegan).ToListAsync().ConfigureAwait(false);
-    }
-
-    public async Task<IEnumerable<IngredientType>> GetIngredientTypesDairyAsync()
-    {
-        return await _context.IngredientTypes.Where(x=>x.IsDairy).ToListAsync().ConfigureAwait(false);
-    }
-
-    public async Task<IEnumerable<IngredientType>> GetIngredientTypesGlutenFreeAsync()
-    {
-        return await _context.IngredientTypes.Where(x=>x.IsGlutenFree).ToListAsync().ConfigureAwait(false);
-    }
-
     public async Task<IngredientType> GetIngredientTypeByIdAsync(int id)
     {
         var ingredientType = await _context.IngredientTypes.FindAsync(id).ConfigureAwait(false);

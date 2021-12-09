@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace PizzeriaWebService.Core.AutoMapperProfiles;
 
-public  class BeverageProfile : Profile
+public class IngredientTypeProfile : Profile
 {
-    public BeverageProfile()
+    public IngredientTypeProfile()
     {
-        CreateMap<Beverage, BeverageDTO>();
-
-        CreateMap<BeverageDTO, Beverage>();
+        CreateMap<IngredientType, IngredientTypeDTO>();
+        
+        CreateMap<IngredientTypeDTO, IngredientType>();
     }
 }

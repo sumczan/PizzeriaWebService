@@ -26,7 +26,7 @@ public class ClientBlacklistRepository : IClientBlacklistRepository
 
     public async Task<ClientBlacklist> GetClientBlacklistByIdAsync(int id)
     {
-        var clientBlacklist = await _context.ClientBlacklists.FindAsync(id).ConfigureAwait(false);
+        var clientBlacklist = await _context.ClientBlacklists.Include(c=>c.City).FirstOrDefaultAsync(x=>x.Id == id).ConfigureAwait(false);
         return clientBlacklist ?? throw new RequestedItemDoesNotExistException($"Client blacklist with provided {id} does not exist!");
     }
 
@@ -43,7 +43,7 @@ public class ClientBlacklistRepository : IClientBlacklistRepository
         var resultClientBlacklist = await _context.ClientBlacklists.AddAsync(clientBlacklist).ConfigureAwait(false);
         await _context.SaveChangesAsync().ConfigureAwait(false);
 
-        return resultClientBlacklist.Entity;
+        return await GetClientBlacklistByIdAsync(resultClientBlacklist.Entity.Id).ConfigureAwait(false);
     }
 
     public async Task RemoveClientBlacklistAsync(int id)
@@ -75,6 +75,6 @@ public class ClientBlacklistRepository : IClientBlacklistRepository
         clientBlacklistToUpdate.Details = clientBlacklist.Details;
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return clientBlacklistToUpdate;
+        return await GetClientBlacklistByIdAsync(clientBlacklistToUpdate.Id).ConfigureAwait(false);
     }
 }

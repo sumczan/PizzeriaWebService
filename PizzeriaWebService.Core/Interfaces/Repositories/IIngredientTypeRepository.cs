@@ -13,11 +13,6 @@ public interface IIngredientTypeRepository
     Task<IngredientType> GetIngredientTypeByIdAsync(int id);
     Task<IngredientType> GetIngredientTypeByNameAsync(string ingredientTypeName);
     Task<IEnumerable<IngredientType>> GetIngredientTypesAsync();
-    Task<IEnumerable<IngredientType>> GetIngredientTypesDairyAsync();
-    Task<IEnumerable<IngredientType>> GetIngredientTypesGlutenFreeAsync();
-    Task<IEnumerable<IngredientType>> GetIngredientTypesMeatAsync();
-    Task<IEnumerable<IngredientType>> GetIngredientTypesVeganAsync();
-    Task<IEnumerable<IngredientType>> GetIngredientTypesVegetableAsync();
     Task RemoveIngredientTypeAsync(int id);
     Task<IngredientType> UpdateIngredientTypeAsync(IngredientType ingredientType);
 }

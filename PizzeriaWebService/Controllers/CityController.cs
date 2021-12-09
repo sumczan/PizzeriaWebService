@@ -54,10 +54,11 @@ public class CityController : ControllerBase
         return CreatedAtAction(nameof(GetCityByIdAsync),new {id = result.Id}, result);
     }
 
-    // PUT API/City
-    [HttpPut]
-    public async Task<IActionResult> UpdateCityAsync(CityDTO cityDTO)
+    // PUT API/City/id
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateCityAsync(int id, CityDTO cityDTO)
     {
+        cityDTO.Id = id;
         var result = await _cityService.UpdateCityAsync(cityDTO).ConfigureAwait(false);
         return Ok(result);
     }

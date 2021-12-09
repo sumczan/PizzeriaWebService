@@ -64,10 +64,11 @@ public class BeverageController : ControllerBase
         return CreatedAtAction(nameof(GetBeverageByIdAsync), new {id = result.Id}, result);
     }
 
-    // PUT API/beverage
-    [HttpPut]
-    public async Task<IActionResult> UpdateBeverageAsync(BeverageDTO beverageDTO)
+    // PUT API/beverage/id
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateBeverageAsync(int id, BeverageDTO beverageDTO)
     {
+        beverageDTO.Id = id;
         var result = await _beverageService.UpdateBeverageAsync(beverageDTO).ConfigureAwait(false);
         return Ok(result);
     }

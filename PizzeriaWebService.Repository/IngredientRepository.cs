@@ -21,18 +21,18 @@ public class IngredientRepository : IIngredientRepository
 
     public async Task<IEnumerable<Ingredient>> GetIngredientsAsync()
     {
-        return await _context.Ingredients.ToListAsync().ConfigureAwait(false);
+        return await _context.Ingredients.Include(it=>it.IngredientType).ToListAsync().ConfigureAwait(false);
     }
 
     public async Task<Ingredient> GetIngredientByIdAsync(int id)
     {
-        var ingredient = await _context.Ingredients.FindAsync(id).ConfigureAwait(false);
+        var ingredient = await _context.Ingredients.Include(it=>it.IngredientType).FirstOrDefaultAsync(x=>x.Id==id).ConfigureAwait(false);
         return ingredient ?? throw new RequestedItemDoesNotExistException($"Ingredient with provided Id: {id} does not exist!");
     }
 
     public async Task<Ingredient> GetIngredientByNameAsync(string ingredientName)
     {
-        var ingredient = await _context.Ingredients.FirstOrDefaultAsync(x=>x.IngredientName==ingredientName).ConfigureAwait(false);
+        var ingredient = await _context.Ingredients.Include(it=>it.IngredientType).FirstOrDefaultAsync(x=>x.IngredientName==ingredientName).ConfigureAwait(false);
         return ingredient ?? throw new RequestedItemDoesNotExistException($"Ingredient with provided name: {ingredientName} does not exist!");
     }
 
@@ -53,7 +53,7 @@ public class IngredientRepository : IIngredientRepository
             throw new ProvidedItemAlreadyExistsException($"Ingredient with provided name: {ingredient.IngredientName} already exists!");
         var resultIngredient = await _context.Ingredients.AddAsync(ingredient).ConfigureAwait(false);
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return resultIngredient.Entity;
+        return await GetIngredientByIdAsync(resultIngredient.Entity.Id).ConfigureAwait(false);
     }
 
     public async Task<Ingredient> UpdateIngredientAsync(Ingredient ingredient)
@@ -68,6 +68,6 @@ public class IngredientRepository : IIngredientRepository
         ingredientToUpdate.IngredientPrice = ingredient.IngredientPrice;
         ingredientToUpdate.IngredientTypeId = ingredient.IngredientTypeId;
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return ingredientToUpdate;
+        return await GetIngredientByIdAsync(ingredientToUpdate.Id).ConfigureAwait(false);
     }
 }

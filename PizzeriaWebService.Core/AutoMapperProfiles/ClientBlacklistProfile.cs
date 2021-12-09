@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PizzeriaWebService.Core.DTOs;
 using PizzeriaWebService.Core.EfModels;
+using PizzeriaWebService.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,8 @@ public class ClientBlacklistProfile : Profile
     public ClientBlacklistProfile()
     {
         CreateMap<ClientBlacklist, ClientBlacklistDTO>()
-            .ForMember(dto => dto.Id, opt => opt.MapFrom(entity => entity.Id))
-            .ForMember(dto => dto.Details, opt => opt.MapFrom(entity => entity.Details))
-            .ForMember(dto => dto.Apartment, opt => opt.MapFrom(entity => entity.Apartment))
-            .ForMember(dto => dto.StreetName, opt => opt.MapFrom(entity => entity.StreetName))
-            .ForMember(dto => dto.PhoneNumber, opt => opt.MapFrom(entity => entity.PhoneNumber));
+            .ForMember(dto => dto.City, opt => opt.MapFrom(entity => entity.City));
 
-        CreateMap<CityDTO, ClientBlacklistDTO>()
-            .ForMember(dto => dto.City, opt => opt.MapFrom(entity => entity));
+        CreateMap<ClientBlacklistDTO, ClientBlacklist>();
     }
 }

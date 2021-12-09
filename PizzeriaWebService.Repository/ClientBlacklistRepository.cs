@@ -21,7 +21,7 @@ public class ClientBlacklistRepository : IClientBlacklistRepository
 
     public async Task<IEnumerable<ClientBlacklist>> GetClientBlacklistAsync()
     {
-        return await _context.ClientBlacklists.ToListAsync().ConfigureAwait(false);
+        return await _context.ClientBlacklists.Include(c => c.City).ToListAsync().ConfigureAwait(false);
     }
 
     public async Task<ClientBlacklist> GetClientBlacklistByIdAsync(int id)

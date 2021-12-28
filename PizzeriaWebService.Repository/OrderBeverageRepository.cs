@@ -21,12 +21,12 @@ public class OrderBeverageRepository : IOrderBeverageRepository
 
     public async Task<IEnumerable<OrderBeverage>> GetOrderBeveragesAsync()
     {
-        return await _context.OrderBeverages.ToListAsync().ConfigureAwait(false);
+        return await _context.OrderBeverages.Include(obv=>obv.Beverage).ToListAsync().ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<OrderBeverage>> GetOrderBeveragesByOrderIdAsync(int orderId)
     {
-        var orderBeverage = await _context.OrderBeverages.Where(x=>x.OrderPlacedId==orderId).ToListAsync().ConfigureAwait(false);
+        var orderBeverage = await _context.OrderBeverages.Include(obv=>obv.Beverage).Where(x=>x.OrderPlacedId==orderId).ToListAsync().ConfigureAwait(false);
         if (!orderBeverage.Any())
             throw new RequestedItemDoesNotExistException($"Order Beverage with provided order Id: {orderId} does not exist!");
         return orderBeverage;
@@ -34,7 +34,7 @@ public class OrderBeverageRepository : IOrderBeverageRepository
 
     public async Task<OrderBeverage> GetOrderBeverageByIdAsync(int id)
     {
-        var orderBeverage = await _context.OrderBeverages.FindAsync(id).ConfigureAwait(false);
+        var orderBeverage = await _context.OrderBeverages.Include(obv=>obv.Beverage).FirstOrDefaultAsync(x=>x.Id==id).ConfigureAwait(false);
         return orderBeverage ?? throw new RequestedItemDoesNotExistException($"Order Beverage with provided Id: {id} does not exist!");
     }
 
@@ -52,7 +52,7 @@ public class OrderBeverageRepository : IOrderBeverageRepository
         orderBeverage.Id = 0;
         var resultOrderBeverage = await _context.OrderBeverages.AddAsync(orderBeverage).ConfigureAwait(false);
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return resultOrderBeverage.Entity;
+        return await GetOrderBeverageByIdAsync(resultOrderBeverage.Entity.Id).ConfigureAwait(false);
     }
 
     public async Task<OrderBeverage> UpdateOrderBeverageAsync(OrderBeverage orderBeverage)
@@ -66,6 +66,6 @@ public class OrderBeverageRepository : IOrderBeverageRepository
         orderBeverageToUpdate.OrderBeveragePrice = orderBeverage.OrderBeveragePrice;
         orderBeverageToUpdate.BeverageId = orderBeverage.BeverageId;
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return orderBeverageToUpdate;
+        return await GetOrderBeverageByIdAsync(orderBeverageToUpdate.Id).ConfigureAwait(false);
     }
 }

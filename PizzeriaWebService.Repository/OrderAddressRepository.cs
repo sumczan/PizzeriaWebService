@@ -21,12 +21,12 @@ public class OrderAddressRepository : IOrderAddressRepository
 
     public async Task<IEnumerable<OrderAddress>> GetOrderAddressesAsync()
     {
-        return await _context.OrderAddresses.ToListAsync().ConfigureAwait(false);
+        return await _context.OrderAddresses.Include(oa=>oa.City).ToListAsync().ConfigureAwait(false);
     }
 
-    public async Task<IEnumerable<OrderAddress>> GetOrderAddressesAsyncByCityIdAsync(int cityId)
+    public async Task<IEnumerable<OrderAddress>> GetOrderAddressesByCityIdAsync(int cityId)
     {
-        var orderAddress = await _context.OrderAddresses.Where(x=>x.CityId == cityId).ToListAsync().ConfigureAwait(false);
+        var orderAddress = await _context.OrderAddresses.Include(oa=>oa.City).Where(x=>x.CityId == cityId).ToListAsync().ConfigureAwait(false);
         if (!orderAddress.Any())
             throw new RequestedItemDoesNotExistException($"Order address with provided city Id: {cityId} does not exist!");
         return orderAddress;
@@ -34,7 +34,7 @@ public class OrderAddressRepository : IOrderAddressRepository
 
     public async Task<OrderAddress> GetOrderAddressByOrderIdAsync(int orderPlacedId)
     {
-        var orderAddress = await _context.OrderAddresses.FindAsync(orderPlacedId).ConfigureAwait(false);
+        var orderAddress = await _context.OrderAddresses.Include(oa=>oa.City).FirstOrDefaultAsync(x=>x.OrderPlacedId == orderPlacedId).ConfigureAwait(false);
         return orderAddress ?? throw new RequestedItemDoesNotExistException($"Order address with provided order Id: {orderPlacedId} does not exist!");
     }
 
@@ -49,15 +49,17 @@ public class OrderAddressRepository : IOrderAddressRepository
 
     public async Task<OrderAddress> AddOrderAddressAsync(OrderAddress orderAddress)
     {
+        orderAddress.City = null;
         if (await _context.OrderAddresses.FindAsync(orderAddress.OrderPlacedId).ConfigureAwait(false) is not null)
             throw new ProvidedItemAlreadyExistsException($"Order address with provided order Id: {orderAddress.OrderPlacedId} already exists!");
         var resultOrderAddress = await _context.AddAsync(orderAddress).ConfigureAwait(false);
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return resultOrderAddress.Entity;
+        return await GetOrderAddressByOrderIdAsync(resultOrderAddress.Entity.OrderPlacedId).ConfigureAwait(false);
     }
 
     public async Task<OrderAddress> UpdateOrderAddressAsync(OrderAddress orderAddress)
     {
+        orderAddress.City = null;
         var orderAddressToUpdate = await _context.OrderAddresses.FindAsync(orderAddress.OrderPlacedId).ConfigureAwait(false);
         if (orderAddressToUpdate is null)
             throw new RequestedItemDoesNotExistException($"Order Address with provided order Id: {orderAddress.OrderPlacedId} does not exist!");
@@ -65,6 +67,6 @@ public class OrderAddressRepository : IOrderAddressRepository
         orderAddressToUpdate.Apartment = orderAddress.Apartment;
         orderAddressToUpdate.CityId = orderAddress.CityId;
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return orderAddressToUpdate;
+        return await GetOrderAddressByOrderIdAsync(orderAddressToUpdate.OrderPlacedId).ConfigureAwait(false);
     }
 }

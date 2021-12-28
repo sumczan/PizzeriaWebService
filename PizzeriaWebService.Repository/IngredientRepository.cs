@@ -48,6 +48,7 @@ public class IngredientRepository : IIngredientRepository
     public async Task<Ingredient> AddIngredientAsync(Ingredient ingredient)
     {
         ingredient.Id = 0;
+        ingredient.IngredientType = null;
         var ingredientFromDb = await _context.Ingredients.FirstOrDefaultAsync(x=>x.IngredientName==ingredient.IngredientName).ConfigureAwait(false);
         if (ingredientFromDb is not null)
             throw new ProvidedItemAlreadyExistsException($"Ingredient with provided name: {ingredient.IngredientName} already exists!");
@@ -58,6 +59,7 @@ public class IngredientRepository : IIngredientRepository
 
     public async Task<Ingredient> UpdateIngredientAsync(Ingredient ingredient)
     {
+        ingredient.IngredientType = null;
         var ingredientToUpdate = await _context.Ingredients.FindAsync(ingredient.Id).ConfigureAwait(false);
         if (ingredientToUpdate is null)
             throw new RequestedItemDoesNotExistException($"Ingredient with provided Id: {ingredient.Id} does not exist!");

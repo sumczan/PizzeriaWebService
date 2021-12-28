@@ -21,6 +21,8 @@ var mapperConfig = new MapperConfiguration(mc =>
     mc.AddProfile(new ClientBlacklistProfile());
     mc.AddProfile(new IngredientTypeProfile());
     mc.AddProfile(new IngredientProfile());
+    mc.AddProfile(new OrderAddressProfile());
+    mc.AddProfile(new OrderBeverageProfile());
 });
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
@@ -89,8 +91,8 @@ app.UseCors(x => x
                 .SetIsOriginAllowed(origin => true)
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .AllowCredentials());
-
+                .AllowCredentials()
+                );
 
 app.MapControllerRoute(
     name: "default",

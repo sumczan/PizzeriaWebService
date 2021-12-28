@@ -33,6 +33,7 @@ public class ClientBlacklistRepository : IClientBlacklistRepository
     public async Task<ClientBlacklist> AddClientBlacklistAsync(ClientBlacklist clientBlacklist)
     {
         clientBlacklist.Id = 0;
+        clientBlacklist.City = null;
         if (clientBlacklist.PhoneNumber is null ||
             !(!String.IsNullOrWhiteSpace(clientBlacklist.StreetName) && !String.IsNullOrWhiteSpace(clientBlacklist.Apartment) && clientBlacklist.CityId is not null))
             throw new ProvidedObjectNotValidException($"To add client blacklist either phone number is required or full address information");
@@ -57,6 +58,7 @@ public class ClientBlacklistRepository : IClientBlacklistRepository
 
     public async Task<ClientBlacklist> UpdateClientBlacklistAsync(ClientBlacklist clientBlacklist)
     {
+        clientBlacklist.City = null;
         var clientBlacklistToUpdate = await _context.ClientBlacklists.FindAsync(clientBlacklist.Id).ConfigureAwait(false);
         if (clientBlacklistToUpdate is null)
             throw new RequestedItemDoesNotExistException($"Client blacklist with provided {clientBlacklist.Id} does not exist!");

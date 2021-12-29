@@ -1,7 +1,5 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using PizzeriaWebService.Core.AutoMapperProfiles;
 using PizzeriaWebService.Core.EfModels;
 using PizzeriaWebService.Core.Interfaces.Repositories;

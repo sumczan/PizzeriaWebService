@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace PizzeriaWebService.Core.EfModels;
+﻿namespace PizzeriaWebService.Core.EfModels;
 
 public partial class Pizza
 {

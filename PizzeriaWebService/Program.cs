@@ -25,6 +25,7 @@ var mapperConfig = new MapperConfiguration(mc =>
     mc.AddProfile(new OrderTypeProfile());
     mc.AddProfile(new PizzaSizeProfile());
     mc.AddProfile(new PizzaIngredientProfile());
+    mc.AddProfile(new PizzaProfile());
 });
 
 IMapper mapper = mapperConfig.CreateMapper();

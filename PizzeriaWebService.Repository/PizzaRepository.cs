@@ -16,18 +16,18 @@ public class PizzaRepository : IPizzaRepository
 
     public async Task<IEnumerable<Pizza>> GetPizzasAsync()
     {
-        return await _context.Pizzas.ToListAsync().ConfigureAwait(false);
+        return await _context.Pizzas.Include(pi=>pi.PizzaIngredients).ToListAsync().ConfigureAwait(false);
     }
 
     public async Task<Pizza> GetPizzaByIdAsync(int id)
     {
-        var resultPizza = await _context.Pizzas.FindAsync(id).ConfigureAwait(false);
+        var resultPizza = await _context.Pizzas.Include(pi=>pi.PizzaIngredients).FirstOrDefaultAsync(x=>x.Id==id).ConfigureAwait(false);
         return resultPizza ?? throw new RequestedItemDoesNotExistException($"Pizza with provided Id: {id} does not exist!");
     }
 
     public async Task<Pizza> GetPizzaByNameAsync(string pizzaName)
     {
-        var resultPizza = await _context.Pizzas.FirstOrDefaultAsync(x=>x.PizzaName==pizzaName).ConfigureAwait(false);
+        var resultPizza = await _context.Pizzas.Include(pi=>pi.PizzaIngredients).FirstOrDefaultAsync(x=>x.PizzaName==pizzaName).ConfigureAwait(false);
         return resultPizza ?? throw new RequestedItemDoesNotExistException($"Pizza with provided name: {pizzaName} does not exist!");
     }
 
@@ -48,7 +48,7 @@ public class PizzaRepository : IPizzaRepository
             throw new ProvidedItemAlreadyExistsException($"Pizza with provided name: {pizza.PizzaName} already exists!");
         var resultPizza = await _context.Pizzas.AddAsync(pizza).ConfigureAwait(false);
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return resultPizza.Entity;
+        return await GetPizzaByIdAsync(resultPizza.Entity.Id).ConfigureAwait(false);
     }
 
     public async Task<Pizza> UpdatePizzaAsync(Pizza pizza)
@@ -61,6 +61,6 @@ public class PizzaRepository : IPizzaRepository
                 throw new ProvidedItemAlreadyExistsException($"Pizza with provided name: {pizza.PizzaName} already exists!");
         pizzaToUpdate.PizzaPrice = pizza.PizzaPrice;
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return pizzaToUpdate;
+        return await GetPizzaByIdAsync(pizzaToUpdate.Id).ConfigureAwait(false);
     }
 }

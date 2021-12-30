@@ -55,7 +55,7 @@ public class PizzaIngredientRepository : IPizzaIngredientRepository
         pizzaIngredient.Id = 0;
         var resultPizzaIngredient = await _context.PizzaIngredients.AddAsync(pizzaIngredient).ConfigureAwait(false);
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return await GetPizzaIngredientByIdAsync(resultPizzaIngredient.Entity.Id);
+        return await GetPizzaIngredientByIdAsync(resultPizzaIngredient.Entity.Id).ConfigureAwait(false);
     }
 
     public async Task<PizzaIngredient> UpdatePizzaIngredientAsync(PizzaIngredient pizzaIngredient)
@@ -67,6 +67,6 @@ public class PizzaIngredientRepository : IPizzaIngredientRepository
             throw new ProvidedObjectNotValidException($"Provided pizza ingredient pizza Id: {pizzaIngredient.PizzaId} does not match Id: {pizzaIngredientToUpdate.PizzaId}!");
         pizzaIngredientToUpdate.IngredientId = pizzaIngredient.IngredientId;
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return await GetPizzaIngredientByIdAsync(pizzaIngredientToUpdate.Id);
+        return await GetPizzaIngredientByIdAsync(pizzaIngredientToUpdate.Id).ConfigureAwait(false);
     }
 }

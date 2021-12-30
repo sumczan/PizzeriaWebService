@@ -2,6 +2,12 @@
 using PizzeriaWebService.Core.DTOs;
 using PizzeriaWebService.Core.Interfaces.Services;
 
+/*  
+ *  This controller will be disabled in the future
+ *  and it's responsibilities will be moved to more general
+ *  OrderController.
+ */
+
 namespace PizzeriaWebService.Controllers;
 [Route("api/[controller]")]
 [ApiController]

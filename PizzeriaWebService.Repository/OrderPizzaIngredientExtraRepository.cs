@@ -16,11 +16,18 @@ public class OrderPizzaIngredientExtraRepository : IOrderPizzaIngredientExtraRep
 
     public async Task<IEnumerable<OrderPizzaIngredientExtra>> GetOrderPizzaIngredientExtrasAsync()
     {
-        return await _context.OrderPizzaIngredientExtras.ToListAsync().ConfigureAwait(false);
+        return await _context.OrderPizzaIngredientExtras
+            .Include(pi=>pi.Ingredient)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
     public async Task<IEnumerable<OrderPizzaIngredientExtra>> GetOrderPizzaIngredientExtrasByOrderPizzaIdAsync(int orderPizzaId)
     {
-        var pizzaIngredientExtras = await _context.OrderPizzaIngredientExtras.Where(x => x.OrderPizzaId == orderPizzaId).ToListAsync().ConfigureAwait(false);
+        var pizzaIngredientExtras = await _context.OrderPizzaIngredientExtras
+            .Include(pi=>pi.Ingredient)
+            .Where(x => x.OrderPizzaId == orderPizzaId)
+            .ToListAsync()
+            .ConfigureAwait(false);
         if (!pizzaIngredientExtras.Any())
             throw new RequestedItemDoesNotExistException($"Pizza ingredient extras with provided pizza order Id: {orderPizzaId} do not exist!");
         return pizzaIngredientExtras;
@@ -28,7 +35,10 @@ public class OrderPizzaIngredientExtraRepository : IOrderPizzaIngredientExtraRep
 
     public async Task<OrderPizzaIngredientExtra> GetOrderPizzaIngredientExtraByIdAsync(int id)
     {
-        var pizzaIngredientExtra = await _context.OrderPizzaIngredientExtras.FindAsync(id).ConfigureAwait(false);
+        var pizzaIngredientExtra = await _context.OrderPizzaIngredientExtras
+            .Include(pi=>pi.Ingredient)
+            .FirstOrDefaultAsync(x=>x.Id==id)
+            .ConfigureAwait(false);
         return pizzaIngredientExtra ?? throw new RequestedItemDoesNotExistException($"Pizza ingredient extra with provided Id: {id} does not exist!");
     }
 
@@ -46,7 +56,7 @@ public class OrderPizzaIngredientExtraRepository : IOrderPizzaIngredientExtraRep
         orderPizzaIngredientExtra.Id = 0;
         var resultPizzaIngredientExtra = await _context.OrderPizzaIngredientExtras.AddAsync(orderPizzaIngredientExtra).ConfigureAwait(false);
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return resultPizzaIngredientExtra.Entity;
+        return await GetOrderPizzaIngredientExtraByIdAsync(resultPizzaIngredientExtra.Entity.Id).ConfigureAwait(false);
     }
 
     public async Task<OrderPizzaIngredientExtra> UpdateOrderPizzaIngredientExtraAsync(OrderPizzaIngredientExtra orderPizzaIngredientExtra)
@@ -60,6 +70,6 @@ public class OrderPizzaIngredientExtraRepository : IOrderPizzaIngredientExtraRep
         pizzaIngredientExtraToUpdate.ExtraIngredientPrice = orderPizzaIngredientExtra.ExtraIngredientPrice;
         pizzaIngredientExtraToUpdate.IngredientId = orderPizzaIngredientExtra.IngredientId;
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return pizzaIngredientExtraToUpdate;
+        return await GetOrderPizzaIngredientExtraByIdAsync(pizzaIngredientExtraToUpdate.Id).ConfigureAwait(false);
     }
 }

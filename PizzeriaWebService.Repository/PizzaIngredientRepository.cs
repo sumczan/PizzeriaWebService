@@ -16,12 +16,12 @@ public class PizzaIngredientRepository : IPizzaIngredientRepository
 
     public async Task<IEnumerable<PizzaIngredient>> GetPizzaIngredientsAsync()
     {
-        return await _context.PizzaIngredients.ToListAsync().ConfigureAwait(false);
+        return await _context.PizzaIngredients.Include(pi=>pi.Ingredient).ToListAsync().ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<PizzaIngredient>> GetPizzaIngredientsByPizzaIdAsync(int pizzaId)
     {
-        var resultPizzaIngredients = await _context.PizzaIngredients.Where(x=>x.PizzaId==pizzaId).ToListAsync().ConfigureAwait(false);
+        var resultPizzaIngredients = await _context.PizzaIngredients.Include(pi=>pi.Ingredient).Where(x=>x.PizzaId==pizzaId).ToListAsync().ConfigureAwait(false);
         if (!resultPizzaIngredients.Any())
             throw new RequestedItemDoesNotExistException($"Pizza ingredients with provided pizza Id: {pizzaId} do not exist!");
         return resultPizzaIngredients;
@@ -29,7 +29,7 @@ public class PizzaIngredientRepository : IPizzaIngredientRepository
 
     public async Task<IEnumerable<PizzaIngredient>> GetPizzaIngredientsByIngredientIdAsync(int ingredientId)
     {
-        var resultPizzaIngredients = await _context.PizzaIngredients.Where(x=>x.IngredientId==ingredientId).ToListAsync().ConfigureAwait(false);
+        var resultPizzaIngredients = await _context.PizzaIngredients.Include(pi=>pi.Ingredient).Where(x=>x.IngredientId==ingredientId).ToListAsync().ConfigureAwait(false);
         if (!resultPizzaIngredients.Any())
             throw new RequestedItemDoesNotExistException($"Pizza ingredients with provided ingredient Id: {ingredientId} do not exist!");
         return resultPizzaIngredients;
@@ -37,7 +37,7 @@ public class PizzaIngredientRepository : IPizzaIngredientRepository
 
     public async Task<PizzaIngredient> GetPizzaIngredientByIdAsync(int id)
     {
-        var resultPizzaIngredient = await _context.PizzaIngredients.FindAsync(id).ConfigureAwait(false);
+        var resultPizzaIngredient = await _context.PizzaIngredients.Include(pi=>pi.Ingredient).FirstOrDefaultAsync(x=>x.Id==id).ConfigureAwait(false);
         return resultPizzaIngredient ?? throw new RequestedItemDoesNotExistException($"Pizza ingredients with provided Id: {id} does not exist!");
     }
 
@@ -55,7 +55,7 @@ public class PizzaIngredientRepository : IPizzaIngredientRepository
         pizzaIngredient.Id = 0;
         var resultPizzaIngredient = await _context.PizzaIngredients.AddAsync(pizzaIngredient).ConfigureAwait(false);
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return resultPizzaIngredient.Entity;
+        return await GetPizzaIngredientByIdAsync(resultPizzaIngredient.Entity.Id);
     }
 
     public async Task<PizzaIngredient> UpdatePizzaIngredientAsync(PizzaIngredient pizzaIngredient)
@@ -67,6 +67,6 @@ public class PizzaIngredientRepository : IPizzaIngredientRepository
             throw new ProvidedObjectNotValidException($"Provided pizza ingredient pizza Id: {pizzaIngredient.PizzaId} does not match Id: {pizzaIngredientToUpdate.PizzaId}!");
         pizzaIngredientToUpdate.IngredientId = pizzaIngredient.IngredientId;
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return pizzaIngredientToUpdate;
+        return await GetPizzaIngredientByIdAsync(pizzaIngredientToUpdate.Id);
     }
 }

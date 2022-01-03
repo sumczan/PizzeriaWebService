@@ -16,12 +16,21 @@ public class OrderPizzaIngredientChangeRepository : IOrderPizzaIngredientChangeR
 
     public async Task<IEnumerable<OrderPizzaIngredientChange>> GetOrderPizzaIngredientChangesAsync()
     {
-        return await _context.OrderPizzaIngredientChanges.ToListAsync().ConfigureAwait(false);
+        return await _context.OrderPizzaIngredientChanges
+            .Include(x=>x.ToChangeIngredient)
+            .Include(x=>x.ChangedIngredient)
+            .ToListAsync()
+            .ConfigureAwait(false);
     } 
 
     public async Task<IEnumerable<OrderPizzaIngredientChange>> GetOrderPizzaIngredientChangesByOrderPizzaIdAsync(int orderPizzaId)
     {
-        var pizzaIngredientChanges = await _context.OrderPizzaIngredientChanges.Where(x => x.OrderPizzaId == orderPizzaId).ToListAsync().ConfigureAwait(false);
+        var pizzaIngredientChanges = await _context.OrderPizzaIngredientChanges
+            .Include(x=>x.ToChangeIngredient)
+            .Include(x=>x.ChangedIngredient)
+            .Where(x => x.OrderPizzaId == orderPizzaId)
+            .ToListAsync()
+            .ConfigureAwait(false);
         if (!pizzaIngredientChanges.Any())
             throw new RequestedItemDoesNotExistException($"Pizza ingredient changes with provided pizza order Id: {orderPizzaId} does not exist!");
         return pizzaIngredientChanges;
@@ -29,7 +38,11 @@ public class OrderPizzaIngredientChangeRepository : IOrderPizzaIngredientChangeR
 
     public async Task<OrderPizzaIngredientChange> GetOrderPizzaIngredientChangeByIdAsync(int id)
     {
-        var pizzaIngredientChange = await _context.OrderPizzaIngredientChanges.FindAsync(id).ConfigureAwait(false);
+        var pizzaIngredientChange = await _context.OrderPizzaIngredientChanges
+            .Include(x=>x.ToChangeIngredient)
+            .Include(x=>x.ChangedIngredient)
+            .FirstOrDefaultAsync(x=>x.Id==id)
+            .ConfigureAwait(false);
         return pizzaIngredientChange ?? throw new RequestedItemDoesNotExistException($"Pizza ingredient change with provided Id: {id} does not exist!");
     }
 
@@ -47,7 +60,7 @@ public class OrderPizzaIngredientChangeRepository : IOrderPizzaIngredientChangeR
         orderPizzaIngredientChange.Id = 0;
         var resultPizzaIngredientChange = await _context.OrderPizzaIngredientChanges.AddAsync(orderPizzaIngredientChange).ConfigureAwait(false);
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return resultPizzaIngredientChange.Entity;
+        return await GetOrderPizzaIngredientChangeByIdAsync(resultPizzaIngredientChange.Entity.Id);
     }
 
     public async Task<OrderPizzaIngredientChange> UpdateOrderPizzaIngredientChangeAsync(OrderPizzaIngredientChange orderPizzaIngredientChange)
@@ -60,6 +73,6 @@ public class OrderPizzaIngredientChangeRepository : IOrderPizzaIngredientChangeR
         pizzaIngredientChangeToUpdate.ToChangeIngredientId = orderPizzaIngredientChange.ToChangeIngredientId;
         pizzaIngredientChangeToUpdate.ChangedIngredientId = orderPizzaIngredientChange.ChangedIngredientId;
         await _context.SaveChangesAsync().ConfigureAwait(false);
-        return pizzaIngredientChangeToUpdate;
+        return await GetOrderPizzaIngredientChangeByIdAsync(pizzaIngredientChangeToUpdate.Id);
     }
 }

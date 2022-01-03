@@ -9,11 +9,7 @@ public  class CityProfile : Profile
     public CityProfile()
     {
         CreateMap<City, CityDTO>();
-        //.ForMember(dto => dto.Id, opt => opt.MapFrom(entity => entity.Id))
-        //.ForMember(dto => dto.CityName, opt => opt.MapFrom(entity => entity.CityName));
 
         CreateMap<CityDTO, City>();
-            //.ForMember(entity => entity.Id, opt => opt.MapFrom(dto => dto.Id))
-            //.ForMember(entity => entity.CityName, opt => opt.MapFrom(dto => dto.CityName));
     }
 }

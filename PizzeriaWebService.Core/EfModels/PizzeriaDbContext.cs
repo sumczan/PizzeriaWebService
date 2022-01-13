@@ -244,7 +244,13 @@ public partial class PizzeriaDbContext : DbContext
             entity.HasOne(d => d.ChangedIngredient)
                 .WithMany(p => p.OrderPizzaIngredientChangeChangedIngredients)
                 .HasForeignKey(d => d.ChangedIngredientId)
-                .HasConstraintName("FK_OrderPizzaIngredientChanege_Ingredient_Changed");
+                .HasConstraintName("FK_OrderPizzaIngredientChange_Ingredient_Changed");
+
+            entity.HasOne(d => d.OrderPizza)
+                .WithMany(p => p.OrderPizzaIngredientChanges)
+                .HasForeignKey(d => d.OrderPizzaId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrderPizzaIngredientChange_OrderPizza");
 
             entity.HasOne(d => d.ToChangeIngredient)
                 .WithMany(p => p.OrderPizzaIngredientChangeToChangeIngredients)

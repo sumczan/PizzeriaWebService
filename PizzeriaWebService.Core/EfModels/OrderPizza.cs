@@ -4,6 +4,7 @@ public partial class OrderPizza
 {
     public OrderPizza()
     {
+        OrderPizzaIngredientChanges = new HashSet<OrderPizzaIngredientChange>();
         OrderPizzaIngredientExtras = new HashSet<OrderPizzaIngredientExtra>();
     }
 
@@ -16,5 +17,6 @@ public partial class OrderPizza
     public virtual OrderPlaced OrderPlaced { get; set; } = null!;
     public virtual Pizza Pizza { get; set; } = null!;
     public virtual PizzaSize PizzaSize { get; set; } = null!;
+    public virtual ICollection<OrderPizzaIngredientChange> OrderPizzaIngredientChanges { get; set; }
     public virtual ICollection<OrderPizzaIngredientExtra> OrderPizzaIngredientExtras { get; set; }
 }

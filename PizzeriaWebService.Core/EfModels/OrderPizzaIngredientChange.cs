@@ -8,5 +8,6 @@ public partial class OrderPizzaIngredientChange
     public int? ChangedIngredientId { get; set; }
 
     public virtual Ingredient? ChangedIngredient { get; set; }
+    public virtual OrderPizza OrderPizza { get; set; } = null!;
     public virtual Ingredient ToChangeIngredient { get; set; } = null!;
 }

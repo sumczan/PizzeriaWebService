@@ -1,6 +1,6 @@
 ﻿namespace PizzeriaWebService.Core.Interfaces.Services;
 
-public interface IOrderPlacedService
+public interface IOrderService
 {
 
 }

@@ -50,12 +50,15 @@ public class OrderPizzaService : IOrderPizzaService
 
     public async Task<OrderPizzaDTO> AddOrderPizzaAsync(OrderPizzaDTO orderPizzaDTO)
     {
-        orderPizzaDTO = CalculatePizzaPrice(orderPizzaDTO);
+        //orderPizzaDTO = CalculatePizzaPrice(orderPizzaDTO);
         
         var orderPizza = _mapper.Map<OrderPizza>(orderPizzaDTO);
         orderPizza = await _orderPizzaRepository.AddOrderPizzaAsync(orderPizza).ConfigureAwait(false);
         orderPizzaDTO.Id = orderPizza.Id;
         
+        orderPizzaDTO.PizzaIngredientExtras?.ToList().ForEach(x=>x.OrderPizzaId=orderPizzaDTO.Id);
+        orderPizzaDTO.PizzaIngredientChanges?.ToList().ForEach(x=>x.OrderPizzaId=orderPizzaDTO.Id);
+
         await Task.WhenAll(
             AddOrderPizzaIngredientChangesAsync(orderPizzaDTO),
             AddOrderPizzaIngredientExtrasAsync(orderPizzaDTO)
@@ -73,35 +76,33 @@ public class OrderPizzaService : IOrderPizzaService
         throw new NotImplementedException();
     }
 
-    private static OrderPizzaDTO CalculatePizzaPrice(OrderPizzaDTO orderPizzaDTO)
-    {
-        orderPizzaDTO.PizzaPrice = decimal.Zero;
-        if (orderPizzaDTO.PizzaIngredientExtras is not null && orderPizzaDTO.PizzaIngredientExtras.Any())
-        {
-            orderPizzaDTO.PizzaIngredientExtras
-                .ToList()
-                .ForEach(x =>
-                    x.ExtraIngredientPrice =
-                        x.ExtraIngredient.IngredientPrice * orderPizzaDTO.PizzaSize.PriceMultiplier
-                        );
-            orderPizzaDTO.PizzaPrice = orderPizzaDTO.PizzaIngredientExtras.Sum(x => x.ExtraIngredientPrice);
-        }
+    //private static OrderPizzaDTO CalculatePizzaPrice(OrderPizzaDTO orderPizzaDTO)
+    //{
+    //    orderPizzaDTO.PizzaPrice = decimal.Zero;
+    //    if (orderPizzaDTO.PizzaIngredientExtras is not null && orderPizzaDTO.PizzaIngredientExtras.Any())
+    //    {
+    //        orderPizzaDTO.PizzaIngredientExtras
+    //            .ToList()
+    //            .ForEach(x =>
+    //                x.ExtraIngredientPrice =
+    //                    x.ExtraIngredient.IngredientPrice * orderPizzaDTO.PizzaSize.PriceMultiplier
+    //                    );
+    //        orderPizzaDTO.PizzaPrice = orderPizzaDTO.PizzaIngredientExtras.Sum(x => x.ExtraIngredientPrice);
+    //    }
 
-        orderPizzaDTO.PizzaPrice += orderPizzaDTO.Pizza.PizzaPrice * orderPizzaDTO.PizzaSize.PriceMultiplier;
+    //    orderPizzaDTO.PizzaPrice += orderPizzaDTO.Pizza.PizzaPrice * orderPizzaDTO.PizzaSize.PriceMultiplier;
 
-        return orderPizzaDTO;
-    }
+    //    return orderPizzaDTO;
+    //}
 
     private async Task AddOrderPizzaIngredientChangesAsync(OrderPizzaDTO orderPizzaDTO)
     {
         if (orderPizzaDTO.PizzaIngredientChanges is not null)
         {
-            var taskList = new List<Task>();
-            foreach (var ingredientChange in orderPizzaDTO.PizzaIngredientChanges)
-            {
-                ingredientChange.OrderPizzaId = orderPizzaDTO.Id;
-                taskList.Add(_orderPizzaChangeService.AddOrderPizzaIngredientChangeAsync(ingredientChange));
-            }
+            var taskList = orderPizzaDTO.PizzaIngredientChanges
+                .Select(ingredientChange => _orderPizzaChangeService.AddOrderPizzaIngredientChangeAsync(ingredientChange))
+                .Cast<Task>()
+                .ToList();
             await Task.WhenAll(taskList).ConfigureAwait(false);
         }
     }
@@ -110,12 +111,10 @@ public class OrderPizzaService : IOrderPizzaService
     {
         if (orderPizzaDTO.PizzaIngredientExtras is not null)
         {
-            var taskList = new List<Task>();
-            foreach (var ingredientExtra in orderPizzaDTO.PizzaIngredientExtras)
-            {
-                ingredientExtra.OrderPizzaId = orderPizzaDTO.Id;
-                taskList.Add(_orderPizzaExtraService.AddOrderPizzaIngredientExtraAsync(ingredientExtra));
-            }
+            var taskList = orderPizzaDTO.PizzaIngredientExtras
+                .Select(ingredientExtra => _orderPizzaExtraService.AddOrderPizzaIngredientExtraAsync(ingredientExtra))
+                .Cast<Task>()
+                .ToList();
             await Task.WhenAll(taskList).ConfigureAwait(false);
         }
     }

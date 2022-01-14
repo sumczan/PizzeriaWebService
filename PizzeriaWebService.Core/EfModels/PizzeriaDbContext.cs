@@ -179,10 +179,6 @@ public partial class PizzeriaDbContext : DbContext
 
             entity.Property(e => e.BeverageId).HasColumnName("Beverage_Id");
 
-            entity.Property(e => e.OrderBeveragePrice)
-                .HasColumnType("decimal(5, 2)")
-                .HasColumnName("Order_Beverage_Price");
-
             entity.Property(e => e.OrderPlacedId).HasColumnName("Order_Placed_Id");
 
             entity.HasOne(d => d.Beverage)

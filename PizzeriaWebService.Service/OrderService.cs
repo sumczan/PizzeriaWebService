@@ -1,7 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using AutoMapper;
 using PizzeriaWebService.Core.DTOs;
 using PizzeriaWebService.Core.EfModels;
+using PizzeriaWebService.Core.Exceptions;
 using PizzeriaWebService.Core.Interfaces.Repositories;
 using PizzeriaWebService.Core.Interfaces.Services;
 
@@ -13,13 +15,15 @@ public class OrderService : IOrderService
     private readonly IOrderPizzaService _orderPizzaService;
     private readonly IOrderBeverageService _orderBeverageService;
     private readonly IMapper _mapper;
+    private readonly PizzeriaDbContext _context;
 
-    public OrderService(IOrderRepository orderRepository, IMapper mapper, IOrderBeverageService orderBeverageService, IOrderPizzaService orderPizzaService)
+    public OrderService(IOrderRepository orderRepository, IMapper mapper, IOrderBeverageService orderBeverageService, IOrderPizzaService orderPizzaService, PizzeriaDbContext context)
     {
         _orderRepository = orderRepository;
         _mapper = mapper;
         _orderBeverageService = orderBeverageService;
         _orderPizzaService = orderPizzaService;
+        _context = context;
     }
 
     public async Task<IEnumerable<OrderDTO>> GetOrdersAsync()
@@ -61,14 +65,25 @@ public class OrderService : IOrderService
         orderDTO = CalculateOrderPrice(orderDTO);
 
         var order = _mapper.Map<OrderPlaced>(orderDTO);
-        order = await _orderRepository.AddOrderAsync(order).ConfigureAwait(false);
+        try
+        {
+            await using var dbTransaction = await _context.Database.BeginTransactionAsync();
+            order = await _orderRepository.AddOrderAsync(order).ConfigureAwait(false);
 
-        orderDTO.Id = order.Id;
-        orderDTO.OrderPizzas?.ToList().ForEach(x => x.OrderId = orderDTO.Id);
-        orderDTO.OrderBeverages?.ToList().ForEach(x => x.OrderId = orderDTO.Id);
+            orderDTO.Id = order.Id;
+            if (orderDTO.OrderAddress is not null) 
+                orderDTO.OrderAddress.OrderID = orderDTO.Id;
+            orderDTO.OrderPizzas?.ToList().ForEach(x => x.OrderId = orderDTO.Id);
+            orderDTO.OrderBeverages?.ToList().ForEach(x => x.OrderId = orderDTO.Id);
 
-        await Task.WhenAll(AddOrderPizzas(orderDTO), AddOrderBeverages(orderDTO)).ConfigureAwait(false);
+            await Task.WhenAll(AddOrderPizzas(orderDTO), AddOrderBeverages(orderDTO)).ConfigureAwait(false);
 
+            await dbTransaction.CommitAsync();
+        }
+        catch (PizzeriaWebServiceException ex)
+        {
+            throw new PizzeriaWebServiceException("Problem occurred while adding new order", ex);
+        }
         order = await _orderRepository.GetOrderByIdAsync(order.Id).ConfigureAwait(false);
         orderDTO = _mapper.Map<OrderDTO>(order);
         return orderDTO;
@@ -76,7 +91,9 @@ public class OrderService : IOrderService
 
     public async Task<OrderDTO> UpdateOrderAsync(OrderDTO orderDTO)
     {
-        throw new NotImplementedException();
+        orderDTO = CalculateOrderPrice(orderDTO);
+        var orderToUpdate = await _orderRepository.GetOrderByIdAsync(orderDTO.Id).ConfigureAwait(false);
+        var orderToUpdateDTO = _mapper.Map<OrderDTO>(orderToUpdate);
     }
 
     private static OrderDTO CalculateOrderPrice(OrderDTO orderDTO)

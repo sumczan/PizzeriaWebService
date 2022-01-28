@@ -9,4 +9,14 @@ public class OrderPizzaDTO
     public decimal PizzaPrice { get; set; }
     public IEnumerable<OrderPizzaIngredientChangeDTO>? PizzaIngredientChanges { get; set; }
     public IEnumerable<OrderPizzaIngredientExtraDTO>? PizzaIngredientExtras { get; set; }
+
+    public static bool Compare(OrderPizzaDTO first, OrderPizzaDTO second)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static bool Compare(IEnumerable<OrderPizzaDTO> first, IEnumerable<OrderPizzaDTO> second)
+    {
+        throw new NotImplementedException();
+    }
 }

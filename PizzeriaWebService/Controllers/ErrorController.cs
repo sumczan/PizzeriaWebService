@@ -16,6 +16,7 @@ public class ErrorController : ControllerBase
             RequestedItemDoesNotExistException => HttpStatusCode.NotFound,
             ProvidedItemAlreadyExistsException => HttpStatusCode.BadRequest,
             ProvidedObjectNotValidException => HttpStatusCode.BadRequest,
+            PizzeriaWebServiceException => HttpStatusCode.BadRequest,
             _ => HttpStatusCode.InternalServerError
         };
 

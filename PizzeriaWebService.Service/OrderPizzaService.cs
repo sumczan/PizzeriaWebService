@@ -50,8 +50,6 @@ public class OrderPizzaService : IOrderPizzaService
 
     public async Task<OrderPizzaDTO> AddOrderPizzaAsync(OrderPizzaDTO orderPizzaDTO)
     {
-        //orderPizzaDTO = CalculatePizzaPrice(orderPizzaDTO);
-        
         var orderPizza = _mapper.Map<OrderPizza>(orderPizzaDTO);
         orderPizza = await _orderPizzaRepository.AddOrderPizzaAsync(orderPizza).ConfigureAwait(false);
         orderPizzaDTO.Id = orderPizza.Id;
@@ -75,25 +73,6 @@ public class OrderPizzaService : IOrderPizzaService
     {
         throw new NotImplementedException();
     }
-
-    //private static OrderPizzaDTO CalculatePizzaPrice(OrderPizzaDTO orderPizzaDTO)
-    //{
-    //    orderPizzaDTO.PizzaPrice = decimal.Zero;
-    //    if (orderPizzaDTO.PizzaIngredientExtras is not null && orderPizzaDTO.PizzaIngredientExtras.Any())
-    //    {
-    //        orderPizzaDTO.PizzaIngredientExtras
-    //            .ToList()
-    //            .ForEach(x =>
-    //                x.ExtraIngredientPrice =
-    //                    x.ExtraIngredient.IngredientPrice * orderPizzaDTO.PizzaSize.PriceMultiplier
-    //                    );
-    //        orderPizzaDTO.PizzaPrice = orderPizzaDTO.PizzaIngredientExtras.Sum(x => x.ExtraIngredientPrice);
-    //    }
-
-    //    orderPizzaDTO.PizzaPrice += orderPizzaDTO.Pizza.PizzaPrice * orderPizzaDTO.PizzaSize.PriceMultiplier;
-
-    //    return orderPizzaDTO;
-    //}
 
     private async Task AddOrderPizzaIngredientChangesAsync(OrderPizzaDTO orderPizzaDTO)
     {

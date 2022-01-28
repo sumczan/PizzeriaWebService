@@ -1,4 +1,6 @@
-﻿namespace PizzeriaWebService.Core.DTOs;
+﻿using PizzeriaWebService.Core.Exceptions;
+
+namespace PizzeriaWebService.Core.DTOs;
 
 public class OrderPizzaDTO
 {

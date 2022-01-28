@@ -17,14 +17,6 @@ public class OrderDTO
 
     public static bool Compare(OrderDTO first, OrderDTO second)
     {
-        var isIdentical = true;
-     //   isIdentical = first.Id == second.Id;
-     //   isIdentical = first.OrderTime == second.OrderTime;
-        //isIdentical = first.OrderPrice == second.OrderPrice;
-        //isIdentical = first.OrderType == second.OrderType;
-        //isIdentical = first.OrderStatus == second.OrderStatus;
-        //isIdentical = first.ExtraInfo == second.ExtraInfo;
-        //isIdentical = first.PhoneNumber == second.PhoneNumber;
         if (first.Id != second.Id)
             throw new ProvidedObjectNotValidException("Id in provided OrderDTOs do not match!");
         if (first.OrderTime != second.OrderTime)
@@ -41,8 +33,11 @@ public class OrderDTO
             return false;
         if (!OrderAddressDTO.Compare(first.OrderAddress, second.OrderAddress))
             return false;
+        if (!OrderPizzaDTO.Compare(first.OrderPizzas, second.OrderPizzas))
+            return false;
+        if (!OrderBeverageDTO.Compare(first.OrderBeverages, second.OrderBeverages))
+            return false;
 
-
-        return isIdentical;
+        return true;
     }
 }

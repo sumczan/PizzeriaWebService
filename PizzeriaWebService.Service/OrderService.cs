@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
 using PizzeriaWebService.Core.DTOs;
 using PizzeriaWebService.Core.EfModels;
@@ -94,6 +95,24 @@ public class OrderService : IOrderService
         orderDTO = CalculateOrderPrice(orderDTO);
         var orderToUpdate = await _orderRepository.GetOrderByIdAsync(orderDTO.Id).ConfigureAwait(false);
         var orderToUpdateDTO = _mapper.Map<OrderDTO>(orderToUpdate);
+        if (OrderDTO.Compare(orderDTO, orderToUpdateDTO))
+            throw new PizzeriaWebServiceException("Provided order is equal to the one already in the DB");
+
+        try
+        {
+            await using var dbTransaction = await _context.Database.BeginTransactionAsync();
+            await _orderRepository.UpdateOrderAsync(_mapper.Map<OrderPlaced>(orderDTO)).ConfigureAwait(false);
+            await Task.WhenAll(UpdateOrderPizzas(orderDTO,orderToUpdateDTO), UpdateOrderBeverages(orderDTO,orderToUpdateDTO)).ConfigureAwait(false);
+            await dbTransaction.CommitAsync();
+        }
+        catch (PizzeriaWebServiceException ex)
+        {
+            throw new PizzeriaWebServiceException($"Problem occurred while updating order: {orderDTO.Id}", ex);
+        }
+
+        var order = await _orderRepository.GetOrderByIdAsync(orderDTO.Id).ConfigureAwait(false);
+        orderDTO = _mapper.Map<OrderDTO>(order);
+        return orderDTO;
     }
 
     private static OrderDTO CalculateOrderPrice(OrderDTO orderDTO)
@@ -147,4 +166,63 @@ public class OrderService : IOrderService
             await Task.WhenAll(taskList).ConfigureAwait(false);
         }
     }
+
+    private async Task UpdateOrderPizzas(OrderDTO orderDTO, OrderDTO orderToUpdateDTO)
+    {
+        var taskList = new List<Task>();
+        var pizzasToRemove = new List<OrderPizzaDTO>();
+        var pizzasToAdd = new List<OrderPizzaDTO>();
+        var pizzasToUpdate = new List<OrderPizzaDTO>();
+        
+        if (orderDTO.OrderPizzas is null && orderToUpdateDTO.OrderPizzas is null)
+            return;
+        if (orderDTO.OrderPizzas is null && orderToUpdateDTO.OrderPizzas is not null)
+            pizzasToRemove = orderToUpdateDTO.OrderPizzas.ToList();
+        if (orderDTO.OrderPizzas is not null && orderToUpdateDTO.OrderPizzas is null)
+            pizzasToAdd = orderDTO.OrderPizzas.ToList();
+        if (orderDTO.OrderPizzas is not null && orderToUpdateDTO.OrderPizzas is not null)
+        {
+            pizzasToRemove = orderToUpdateDTO.OrderPizzas
+                .Where(x => orderDTO.OrderPizzas
+                    .All(y => y.Id != x.Id))
+                .ToList();
+            pizzasToAdd = orderDTO.OrderPizzas
+                .Where(x => orderToUpdateDTO.OrderPizzas
+                    .All(y => y.Id != x.Id))
+                .ToList();
+            pizzasToUpdate = orderDTO.OrderPizzas
+                .Where(x => pizzasToAdd
+                    .All(y => y.Id != x.Id))
+                .ToList();
+        }
+
+        foreach (var pizza in pizzasToRemove)
+            taskList.Add(_orderPizzaService.RemoveOrderPizzaAsync(pizza.Id));
+        foreach (var pizza in pizzasToAdd)
+            taskList.Add(_orderPizzaService.AddOrderPizzaAsync(pizza));
+        foreach (var pizza in pizzasToUpdate)
+            taskList.Add(_orderPizzaService.UpdateOrderPizzaAsync(pizza));
+
+        await Task.WhenAll(taskList).ConfigureAwait(false);
+    }
+
+    private async Task UpdateOrderBeverages(OrderDTO orderDTO, OrderDTO orderToUpdateDTO)
+    {
+        var taskList = new List<Task>();
+        var beverageToRemove = new List<OrderBeverageDTO>();
+        var beverageToAdd = new List<OrderBeverageDTO>();
+        var beverageToUpdate = new List<OrderBeverageDTO>();
+
+        if (orderDTO.OrderBeverages is null && orderToUpdateDTO.OrderBeverages is null)
+            return;
+        if (orderDTO.OrderBeverages is null && orderToUpdateDTO.OrderBeverages is not null)
+            beverageToRemove = orderToUpdateDTO.OrderBeverages.ToList();
+        if (orderDTO.OrderBeverages is not null && orderToUpdateDTO.OrderBeverages is null)
+            beverageToAdd = orderDTO.OrderBeverages.ToList();
+        if (orderDTO.OrderBeverages is not null && orderToUpdateDTO.OrderBeverages is not null)
+        {
+            // TODO
+        }
+    }
+
 }
